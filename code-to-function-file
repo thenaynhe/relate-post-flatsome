@@ -1,0 +1,28 @@
+
+/* Dev by Woovn */ add_shortcode('woovn_posts_related','flatsome_related_posts');
+function flatsome_related_posts(){
+	ob_start();
+	$categories = get_the_category(get_the_ID());
+	if ($categories){
+		echo '<div class="relatedcat">';
+		$category_ids = array();
+		foreach($categories as $individual_category) array_push($category_ids, $individual_category->term_id);
+		$my_query = new wp_query(array(
+			'category__in' => $category_ids,
+			'post__not_in' => array(get_the_ID()),
+			'posts_per_page' => 6
+		));
+		$ids = wp_list_pluck( $my_query->posts, 'ID' );
+		$ids = implode(',', $ids);
+		if( $my_query->have_posts() ){
+			echo '<h3>Bài viết liên quan</h3>';
+			//echo do_shortcode('[blog_posts style="normal" columns="3" columns__md="2" ids="' . $ids . '" image_height="56.25%" text_align="left"]'); // Slider
+			echo do_shortcode('[blog_posts style="normal" type="row" columns="3" columns__md="2" posts="6" image_height="56.25%" text_align="left" ids="' . $ids . '"]'); // Row
+		}
+		echo '</div>';
+	}
+	return ob_get_clean();
+}
+/* Add to function file
+/* Shortcode to html blog
+[woovn_posts_related]
